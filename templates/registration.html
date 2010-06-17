@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% macro render_field(field) %}
+<dt>{{ field.label }}
+<dd>{{ field(**kwargs)|safe }}
+{% if field.errors %}
+<ul class='errors'>
+    {% for error in field.errors %}<li>{{ error }}{% endfor %}
+</ul>
+{% endif %}
+</dd>
+{% endmacro %}
+
+{% block content %}
+Hello there :} 
+<form method='post' action='/register'>
+    <dl>
+        {{ render_field(form.username) }}
+        {{ render_field(form.email) }}
+        {{ render_field(form.password) }}
+        {{ render_field(form.password_confirm) }}
+    </dl>
+    <p><input type='submit' value='Register'></p>
+</form>
+{% endblock %}

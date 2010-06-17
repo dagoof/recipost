@@ -3,7 +3,7 @@ create table users(
     id integer primary key autoincrement,
     name string not null,
     password string not null,
-    email string not null,
+    email string not null
 );
 
 drop table if exists posts;
@@ -13,7 +13,7 @@ create table posts(
     author string not null,
     title string not null,
     body string,
-    timestamp integer,
+    ts timestamp
 );
 
 drop table if exists comments;
@@ -24,4 +24,5 @@ create table comments(
     author_id integer not null,
     rating integer,
     body string,
+    ts timestamp
 );
