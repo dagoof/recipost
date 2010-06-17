@@ -1,17 +1,26 @@
 from flask import Flask, request, redirect, url_for, render_template
-import pycassa
+import sqlite3
+from contextlib import closing
+import time
 
-client=pycassa.connect()
-users=pycassa.ColumnFamily(client, 'recipost', 'Users', super=True)
-posts=pycassa.ColumnFamily(client, 'recipost', 'Posts', super=True)
-usernames=pycassa.ColumnFamily(client, 'recipost', 'UserNames')
+DATABASE='recipost.db'
+SECRET_KEY='devkey'
+DEBUG=True
 app=Flask(__name__)
+app.config.from_object(__name__)
 
-def get_user(username):
-    try:
-        return usernames.get(username)
-    except:
-        return  {}
+def connect_db():
+    return sqlite3.connect(DATABASE)
+
+def init_db():
+    with closing(connect_db()) as db:
+        with app.open_resource('schema.sql') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
+
+@app.before_request
+def before_request():
+    g.db=connect_db()
 
 @app.route('/')
 def index():
@@ -20,4 +29,4 @@ def index():
 
 
 if __name__=='__main__':
-    app.run(debug=True, host='0.0.0.0', port=8091)
+    app.run(host='0.0.0.0', port=8091)
