@@ -1,8 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
+
+Users
 {% for user in users %}
-name: {{ user['name'] }}<br>
-pass: {{ user['password'] }}<br>
-email: {{ user['email'] }}<br><br>
+{% for key, val in user.items() %}
+{{ key }} : {{ val }}<br>
+{% endfor %}
+<br>
+{% endfor %}
+
+Recipes
+{% for post in posts %}
+{% for key, val in post.items() %}
+{{ key }} : {{ val }}<br>
+{% endfor %}
+<br>
 {% endfor %}
 {% endblock %}

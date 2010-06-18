@@ -1,13 +1,19 @@
 import sqlite3, datetime, time, hashlib
-from flask import Flask, request, redirect, url_for, render_template, g
+from flask import Flask, request, redirect, url_for, render_template, g, session
+from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, validators
 from contextlib import closing
-from wtforms import Form, BooleanField, TextField, PasswordField, validators
+from functools import wraps
 
 DATABASE='recipost.db'
 SECRET_KEY='devkey'
 DEBUG=True
 app=Flask(__name__)
 app.config.from_object(__name__)
+
+def adapt_datetime(ts):
+    return time.mktime(ts.timetuple())
+
+sqlite3.register_adapter(datetime.datetime, adapt_datetime)
 
 def connect_db():
     return sqlite3.connect(DATABASE)
@@ -26,13 +32,32 @@ def query_db(query, args=(), one=False):
 
 class RegistrationForm(Form):
     username=TextField('Username', [validators.Length(min=4, max=25), validators.Required()])
-    email=TextField('Email Address', [validators.required(),])
+    email=TextField('Email Address', [validators.required(), validators.Email()])
     password=PasswordField('Password', [validators.Required(), validators.EqualTo('password_confirm', message='Passwords must match')])
     password_confirm=PasswordField('Repeat Password')
+
+class LoginForm(Form):
+    username=TextField('Username', [validators.required(),])
+    password=PasswordField('Password', [validators.required(),])
+
+class RecipeForm(Form):
+    title=TextField('Title', [validators.required(),])
+    body=TextAreaField('Recipe Body', [validators.required(),])
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not getattr(g, 'user', None):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.before_request
 def before_request():
     g.db=connect_db()
+    g.user=None
+    if 'username' in session:
+        g.user=query_db('select * from users where name=?', (session['username'],), one=True)
 
 @app.after_request
 def after_request(response):
@@ -41,7 +66,9 @@ def after_request(response):
 
 @app.route('/')
 def index():
-    return render_template('index.html', users=(user for user in query_db('select * from users')))
+    return render_template('index.html',
+        users=query_db('select * from users'),
+        posts=query_db('select * from posts'),)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_user():
@@ -52,6 +79,34 @@ def register_user():
         g.db.commit()
         return redirect(url_for('index'))
     return render_template('registration.html', form=form)
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    form=LoginForm(request.form)
+    if request.method=='POST':
+        form_user={'name':form.username.data, 'password':hashlib.sha256(form.password.data).hexdigest()}
+        user=query_db('select * from users where name=?', (form_user.get('name'),), one=True)
+        if user and user.get('password')==form_user.get('password'):
+            session['username']=user.get('name')
+            return redirect(url_for('index'))
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+@app.route('/create', methods=['GET', 'POST'])
+@login_required
+def create_recipe():
+    form=RecipeForm(request.form)
+    if request.method=='POST' and form.validate():
+        recipe=(g.user['id'], g.user['name'], form.title.data, form.body.data, datetime.datetime.now())
+        g.db.execute('insert into posts (author_id, author, title, body, ts) values (?,?,?,?,?)', recipe)
+        g.db.commit()
+        return redirect(url_for('index'))
+    return render_template('create_recipe.html', form=form)
 
 
 if __name__=='__main__':
