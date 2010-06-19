@@ -1,5 +1,5 @@
 import sqlite3, datetime, time, hashlib
-from flask import Flask, request, redirect, url_for, render_template, g, session
+from flask import Flask, request, redirect, url_for, render_template, g, session, abort
 from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, validators
 from contextlib import closing
 from functools import wraps
@@ -64,6 +64,10 @@ def after_request(response):
     g.db.close()
     return response
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'),404
+
 @app.route('/')
 def index():
     return render_template('index.html',
@@ -78,7 +82,7 @@ def register_user():
         g.db.execute('insert into users (name, password, email) values (?,?,?)', user)
         g.db.commit()
         return redirect(url_for('index'))
-    return render_template('registration.html', form=form)
+    return render_template('generic_form.html', form=form)
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -89,7 +93,16 @@ def login():
         if user and user.get('password')==form_user.get('password'):
             session['username']=user.get('name')
             return redirect(url_for('index'))
-    return render_template('login.html', form=form)
+    return render_template('generic_form.html', form=form)
+
+@app.route('/user/<user>')
+def user_page(user):
+    user_dict=query_db('select * from users where name=?', (user,), one=True)
+    if user_dict:
+        posts=query_db('select * from posts where author=?', (user_dict.get('name'),))
+        print posts
+        return render_template('user_page.html', posts=posts)
+    abort(404)
 
 @app.route('/logout')
 @login_required
@@ -106,8 +119,7 @@ def create_recipe():
         g.db.execute('insert into posts (author_id, author, title, body, ts) values (?,?,?,?,?)', recipe)
         g.db.commit()
         return redirect(url_for('index'))
-    return render_template('create_recipe.html', form=form)
-
+    return render_template('generic_form.html', form=form)
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=8091)

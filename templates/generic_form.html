@@ -13,7 +13,7 @@
 
 {% block content %}
 Hello there :} 
-<form method='post' action='/register'>
+<form method='post' action='{{ request.path }}'>
     <dl>
         {% for field in form %}
         {{ render_field(field) }}

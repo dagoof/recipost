@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+{% for post in posts %}
+<div class='post_container'>
+    <div class='post_sig'>
+        <div class='date'>23<sub>Jun 2010</sub></div>
+    </div>
+    <div class='post_body'>
+        {{ post.title }}, <a href='/user/{{ post.author }}'>{{ post.author}}</a>
+        <p>{{ post.body }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
