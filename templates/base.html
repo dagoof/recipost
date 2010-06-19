@@ -8,24 +8,31 @@
     </head>
     <body>
         <div id='header_container'>
-            <div id='nav'>
+            <div id='login'>
                 {% if g.user %}
                 Hello <a href='/user/{{g.user.name}}'>{{ g.user.name }}</a>, <a href='/logout'>logout?</a>
+                {% else %}
+                Care to <a href='/login'>login</a> or <a href='/register'>register</a>?
+                {% endif %}
+            </div>
+            <em>Recipost</em>
+            {% block header %}{% endblock %}
+        </div>
+        <div id='nav_container'>
+            <div id='nav'>
+                {% if g.user %}
                 <ul>
                     <li><a href='/create'><span class='action'>New Post</a></li>
                     <li><a href='/directory'>People</a></li>
                     <li><a href='/tags'>Tags</a></li>
                 </ul>
                 {% else %}
-                Care to <a href='/login'>login</a> or <a href='/register'>register</a>?
                 <ul>
                     <li><a href='/directory'>People</a></li>
                     <li><a href='/tags'>Tags</a></li>
                 </ul>
                 {% endif %}
             </div>
-            <em>Recipost</em>
-            {% block header %}{% endblock %}
         </div>
         <div id='content_container'>
             {% block content %}{% endblock %}

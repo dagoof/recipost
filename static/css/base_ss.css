@@ -1,5 +1,5 @@
 html{
-    background:#3e4551;
+    background:#3e4551 url('/static/img/marble_a.png');
 }
 
 body{
@@ -11,7 +11,7 @@ body{
 
 a, a.visited{
     font-weight:bold;
-    color:#d2d6db;
+    color:#bac5d0;
     text-decoration:none;
     -webkit-transition-property:color;
     -webkit-transition-duration:.2s;
@@ -39,9 +39,24 @@ a.current, a:hover{
     text-shadow:0px -1px 1px #000;
 }
 
-#nav{
+#login{
+    padding-top:.6em;
     text-align:right;
     float:right;
+}
+
+#nav_container{
+    width:100%;
+    /*background:rgba(0,0,0,.1);*/
+    background:-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,.2)));
+    border-width:0 0 3px 0;
+    border-style:solid;
+    border-color:rgba(0,0,0,.3);
+}
+
+#nav{
+    width:680px;
+    margin:0 auto;
 }
 
 #nav ul{
@@ -54,7 +69,7 @@ a.current, a:hover{
 #nav li{
     display:inline;
     margin:0;
-    padding-left:.6em;
+    padding:0 2em;
 }
 
 #content_container{
