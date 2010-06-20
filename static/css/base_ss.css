@@ -1,10 +1,10 @@
 html{
-    background:#3e4551 url('/static/img/marble_a.png');
+    background:#3e4551;
 }
 
 body{
     margin:0;
-    padding:2em 0;
+    padding:0;
     color:#000a2b;
     font:16px/1 freesans, sans-serif;
 }
@@ -26,14 +26,14 @@ a.current, a:hover{
 
 #header_container{
     color:#fcfef8;
-    padding:2em;
     margin:0 auto;
     width:680px;
+    padding:2em 0;
 }
 
 #header_container em{
-    font-size:3.6em;
-    font-family:Prociono;
+    font-size:4.6em;
+    font-family:'Goudy Bookletter 1911';
     font-weight:none;
     font-style:normal;
     text-shadow:0px -1px 1px #000;
@@ -45,55 +45,66 @@ a.current, a:hover{
     float:right;
 }
 
-#nav_container{
-    width:100%;
-    /*background:rgba(0,0,0,.1);*/
-    background:-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,.2)));
-    border-width:0 0 3px 0;
-    border-style:solid;
-    border-color:rgba(0,0,0,.3);
-}
-
-#nav{
-    width:680px;
-    margin:0 auto;
-}
-
-#nav ul{
+#login ul{
     font-size:1.2em;
+    padding:.8em 0;
     margin:0;
-    padding:.4em 0;
     list-style:none;
 }
 
-#nav li{
+#login li{
     display:inline;
     margin:0;
-    padding:0 2em;
+    padding:0 0 0 1em;
+}
+
+#login input{
+    font-size:1em;
+    border:0px solid #16191a;
+    background-color:#212930;
+    box-shadow:0px -1px 1px #0a0b0c;
+    -webkit-box-shadow:0px -1px 1px #0a0b0c;
+    -moz-box-shadow:0px -1px 1px #0a0b0c;
+    border-radius:.3em;
+    color:#e2e5e7;
+    width:8em;
 }
 
 #content_container{
     width:680px;
-    margin:0 auto;
+    margin:0em auto;
+    padding:0;
+    background:#f0f0f0;
+    border-radius:.4em;
+    -webkit-box-shadow:-1px -1px 2px #212930;
 }
 
-.post_body{
-    margin:2em 200px 2em 2em;
+.post_container{
+    display:block;
+    min-height:220px;
     padding:1em;
-    background:#c7d2db;
-    color:#000;
-    border-radius:.2em .2em .4em .4em;
 }
 
-.post_sig{
-    width:200px;
-    float:right;
+.post_container .comments{
+    display:none;
+    /*
+    display:block;
+    padding:36px 0 12px 0;
+    text-align:center;
+    */
 }
 
-.date{
-    margin:0 2em;
-    padding:1em;
-    background:#c7d2db;
-    color:#000;
-    border-radius:.2em .2em .4em .4em;
+.post_container img{
+    width:220px;
+    height:200px;
+    background:white;
+    border:1px solid #d9e7eb;
+    padding:6px;
+    margin:0px 15px 5px 0;
+    float:left;
+}
+
+.post_container h2, .post_container h3, .post_container p{
+    margin:0;
+    padding:0;
 }

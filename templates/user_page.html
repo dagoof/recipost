@@ -2,13 +2,10 @@
 {% block content %}
 {% for post in posts %}
 <div class='post_container'>
-    <div class='post_sig'>
-        <div class='date'>23<sub>Jun 2010</sub></div>
-    </div>
-    <div class='post_body'>
-        {{ post.title }} by <a href='/user/{{ post.author }}'>{{ post.author}}</a>
-        <p>{{ post.body }}</p>
-    </div>
+    <span class='comments'>22</span>
+    <img src='/static/img/pie.jpg'>
+    <h1>{{ post.title }} by <a href='/user/{{ post.author }}'>{{ post.author}}</a></h1>
+    <div class='ting'>{{ post.body|markdown }}</div>
 </div>
 {% endfor %}
 {% endblock %}

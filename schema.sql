@@ -13,6 +13,7 @@ create table posts(
     author string not null,
     title string not null,
     body string,
+    tags string,
     ts timestamp
 );
 
@@ -21,7 +22,6 @@ create table comments(
     id integer primary key autoincrement,
     reply_to integer not null,
     author string not null,
-    author_id integer not null,
     rating integer,
     body string,
     ts timestamp

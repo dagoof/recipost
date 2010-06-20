@@ -10,6 +10,13 @@ DEBUG=True
 app=Flask(__name__)
 app.config.from_object(__name__)
 
+def do_markdown(s):
+    from markdown import markdown
+    from jinja2.utils import Markup
+    return Markup(markdown(s.encode('utf-8')).decode('utf-8'))
+
+app.jinja_env.filters['markdown']=do_markdown
+
 def adapt_datetime(ts):
     return time.mktime(ts.timetuple())
 
@@ -100,7 +107,6 @@ def user_page(user):
     user_dict=query_db('select * from users where name=?', (user,), one=True)
     if user_dict:
         posts=query_db('select * from posts where author=?', (user_dict.get('name'),))
-        print posts
         return render_template('user_page.html', posts=posts)
     abort(404)
 
