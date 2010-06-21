@@ -4,8 +4,7 @@
 <div class='post_container'>
     <span class='comments'>22</span>
     <img src='/static/img/pie.jpg'>
-    <h1>{{ post.title }} by <a href='/user/{{ post.author }}'>{{ post.author}}</a></h1>
-    <div class='ting'>{{ post.body|markdown }}</div>
+    <h1><a href='/post/{{ post.id }}'>{{ post.title }}</a> by <a href='/user/{{ post.author }}'>{{ post.author}}</a></h1>
 </div>
 {% endfor %}
 {% endblock %}

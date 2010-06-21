@@ -1,6 +1,6 @@
 import sqlite3, datetime, time, hashlib
 from flask import Flask, request, redirect, url_for, render_template, g, session, abort
-from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, validators
+from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, IntegerField, validators
 from contextlib import closing
 from functools import wraps
 
@@ -50,6 +50,11 @@ class LoginForm(Form):
 class RecipeForm(Form):
     title=TextField('Title', [validators.required(),])
     body=TextAreaField('Recipe Body', [validators.required(),])
+
+class CommentForm(Form):
+    body=TextAreaField('Comment', [validators.required(),])
+    rating=IntegerField('Rating', [validators.required(),])
+
 
 def login_required(f):
     @wraps(f)
@@ -110,6 +115,14 @@ def user_page(user):
         return render_template('user_page.html', posts=posts)
     abort(404)
 
+@app.route('/post/<int:post_id>')
+def post_page(post_id):
+    post=query_db('select * from posts where id=?', (post_id,), one=True)
+    if post:
+        comments=query_db('select * from comments where reply_to=?', (post_id,))
+        return render_template('post_page.html', post=post, comments=comments)
+    abort(404)
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -126,6 +139,18 @@ def create_recipe():
         g.db.commit()
         return redirect(url_for('index'))
     return render_template('generic_form.html', form=form)
+
+@app.route('/comment/<int:post_id>', methods=['GET','POST'])
+@login_required
+def comment(post_id):
+    form=CommentForm(request.form)
+    if request.method=='POST' and form.validate():
+        recipe=(post_id, g.user['name'], form.rating.data, form.body.data, datetime.datetime.now())
+        g.db.execute('insert into comments (reply_to, author, rating, body, ts) values (?,?,?,?,?)', recipe)
+        g.db.commit()
+        return redirect(url_for('post_page', post_id=post_id))
+    return render_template('generic_form.html', form=form)
+
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=8091)
