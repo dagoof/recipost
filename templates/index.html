@@ -1,19 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
 
-Users
-{% for user in users %}
-{% for key, val in user.items() %}
-{{ key }} : {{ val }}<br>
-{% endfor %}
-<br>
-{% endfor %}
+<div class='post_container'>
+    <h1>Users</h1><br>
+    {% for user in users %}
+    <a href='{{ url_for('user_page', user=user.name) }}'>{{ user.name }}</a> <br>
+    {% endfor %}
+</div>
 
-Recipes
-{% for post in posts %}
-{% for key, val in post.items() %}
-{{ key }} : {{ val }}<br>
-{% endfor %}
-<br>
-{% endfor %}
+<div class='post_container'>
+    <h1>Recipes</h1><br>
+    {% for post in posts %}
+    <a href='{{ url_for('post_page', post_id=post.id) }}'>{{ post.title }}</a><br>
+    {% endfor %}
+</div>
 {% endblock %}

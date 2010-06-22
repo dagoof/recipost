@@ -6,6 +6,7 @@ body{
     margin:0;
     padding:0;
     color:#000a2b;
+    color:#fcfef8;
     font:16px/1 freesans, sans-serif;
 }
 
@@ -58,7 +59,7 @@ a.current, a:hover{
     padding:0 0 0 1em;
 }
 
-#login input{
+input, textarea{
     font-size:1em;
     border:0px solid #16191a;
     background-color:#212930;
@@ -74,23 +75,19 @@ a.current, a:hover{
     width:680px;
     margin:0em auto;
     padding:0;
+    /*
     background:#f0f0f0;
     border-radius:.4em;
     -webkit-box-shadow:-1px -1px 2px #212930;
+    */
 }
 
 .post_container{
     display:block;
-    min-height:220px;
-    padding:1em;
-}
-
-.post_container .comments{
-    display:none;
+    padding:.4em;
+    border-bottom:1px solid #4f5863;
     /*
-    display:block;
-    padding:36px 0 12px 0;
-    text-align:center;
+    min-height:220px;
     */
 }
 
@@ -104,7 +101,8 @@ a.current, a:hover{
     float:left;
 }
 
-.post_container h2, .post_container h3, .post_container p{
+.post_container h1, .post_container h2, .post_container h3{
     margin:0;
     padding:0;
+    display:inline;
 }

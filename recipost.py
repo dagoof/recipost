@@ -27,7 +27,7 @@ def connect_db():
 
 def init_db():
     with closing(connect_db()) as db:
-        with app.open_resource(DATABASE) as f:
+        with app.open_resource('schema.db') as f:
             db.cursor().executescript(f.read())
         db.commit()
 
@@ -109,10 +109,17 @@ def login():
 
 @app.route('/user/<user>')
 def user_page(user):
+    def avg(l):
+        l=list(l)
+        return float(sum(l))/len(l)
+
     user_dict=query_db('select * from users where name=?', (user,), one=True)
     if user_dict:
         posts=query_db('select * from posts where author=?', (user_dict.get('name'),))
-        return render_template('user_page.html', posts=posts)
+        ratings=query_db('select * from comments where reply_to in ({0})'.format(','.join('?'*len(posts))), [p['id'] for p in posts])
+        ratings=dict((r,avg(c['rating'] for c in ratings if c['reply_to']==r)) for r in set(r['reply_to'] for r in ratings))
+        print ratings
+        return render_template('user_page.html', posts=posts, ratings=ratings)
     abort(404)
 
 @app.route('/post/<int:post_id>')
