@@ -1,6 +1,6 @@
 import sqlite3, datetime, time, hashlib, os
 from flask import Flask, request, redirect, url_for, render_template, g, session, abort
-from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, IntegerField, validators
+from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, IntegerField, FileField, validators
 from contextlib import closing
 from functools import wraps
 from werkzeug import secure_filename
@@ -58,6 +58,7 @@ class LoginForm(Form):
 class RecipeForm(Form):
     title=TextField('Title', [validators.required(),])
     body=TextAreaField('Recipe Body', [validators.required(),])
+    image=FileField('Image File', [])
 
 class CommentForm(Form):
     body=TextAreaField('Comment', [validators.required(),])
