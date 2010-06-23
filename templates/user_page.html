@@ -1,9 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-{% for post in posts %}
 <div class='post_container'>
+    <h1>Posts</h1>
+</div>
+{% for post in posts %}
+<div class='post_container indented'>
     <h1><a href='/post/{{ post.id }}'>{{ post.title }}</a></h1><h2> by <a href='/user/{{ post.author }}'>{{ post.author}}</a></h2>
     <span class='right rating'>{{ ratings[post.id] }} stars</span>
+</div>
+{% endfor %}
+
+<div class='post_container'>
+    <h1>Comments</h1>
+</div>
+{% for comment in comments %}
+<div class='post_container indented'>
+    <a href='{{ url_for('post_page', post_id=comment.reply_to) }}'>{{ comment.body }}</a>
 </div>
 {% endfor %}
 {% endblock %}

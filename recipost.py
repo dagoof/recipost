@@ -1,19 +1,27 @@
-import sqlite3, datetime, time, hashlib
+import sqlite3, datetime, time, hashlib, os
 from flask import Flask, request, redirect, url_for, render_template, g, session, abort
 from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, IntegerField, validators
 from contextlib import closing
 from functools import wraps
+from werkzeug import secure_filename
 
 DATABASE='recipost.db'
+UPLOAD_FOLDER='static/img'
+ALLOWED_EXTENSIONS=set(['jpg','png','gif','jpeg'])
 SECRET_KEY='devkey'
 DEBUG=True
+
 app=Flask(__name__)
+app.add_url_rule('/uploads/<filename>', 'uploaded_file', build_only=True)
 app.config.from_object(__name__)
+
+def allowed_file(filename):
+    return filename.split('.')[-1] in ALLOWED_EXTENSIONS
 
 def do_markdown(s):
     from markdown import markdown
     from jinja2.utils import Markup
-    return Markup(markdown(s.encode('utf-8')).decode('utf-8'))
+    return Markup(markdown(s.encode('utf-8'), ['imageExtension']).decode('utf-8'))
 
 app.jinja_env.filters['markdown']=do_markdown
 
@@ -118,8 +126,8 @@ def user_page(user):
         posts=query_db('select * from posts where author=?', (user_dict.get('name'),))
         ratings=query_db('select * from comments where reply_to in ({0})'.format(','.join('?'*len(posts))), [p['id'] for p in posts])
         ratings=dict((r,avg(c['rating'] for c in ratings if c['reply_to']==r)) for r in set(r['reply_to'] for r in ratings))
-        print ratings
-        return render_template('user_page.html', posts=posts, ratings=ratings)
+        comments=query_db('select * from comments where author=?', (user_dict.get('name'),))
+        return render_template('user_page.html', posts=posts, ratings=ratings, comments=comments)
     abort(404)
 
 @app.route('/post/<int:post_id>')
@@ -141,6 +149,10 @@ def logout():
 def create_recipe():
     form=RecipeForm(request.form)
     if request.method=='POST' and form.validate():
+        for file in request.files.values():
+            if file and allowed_file(file.filename):
+                filename=secure_filename(file.filename)
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
         recipe=(g.user['id'], g.user['name'], form.title.data, form.body.data, datetime.datetime.now())
         g.db.execute('insert into posts (author_id, author, title, body, ts) values (?,?,?,?,?)', recipe)
         g.db.commit()

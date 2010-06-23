@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <div class='post_container'>
-    <span class='comments'>22</span>
     <img src='/static/img/pie.jpg'>
-    <h1>{{ post.title }} by <a href='/user/{{ post.author }}'>{{ post.author}}</a></h1>
-    <div class='ting'>{{ post.body|markdown }}</div>
-    <a href='/comment/{{ post.id }}'>comment</a>
+    <h1><a href='{{ url_for('post_page', post_id=post.id) }}'>{{ post.title }}</a> by <a href='{{ url_for('user_page', user=post.author) }}'>{{ post.author}}</a></h1>
+</div>
+<div class='post_container'>
+    {{ post.body|markdown }}
+</div>
+<div class='post_container'>
+    <p style='text-align:right;'><a href='/comment/{{ post.id }}'>comment</a></p>
     {% for comment in comments %}
-        {% for key, val in comment.items() %}
-        {{ key }} -- {{ val }}<br>
-        {% endfor %}
-        <br>
+    <p><a href='{{ url_for('user_page', user=comment.author) }}'>{{ comment.author }}</a>: {{ comment.body }}</p>
     {% endfor %}
 </div>
 {% endblock %}

@@ -25,6 +25,15 @@ a.current, a:hover{
     -webkit-transition-timing-function: ease-out;
 }
 
+em a, em a.visited{
+    font-weight:normal;
+    color:inherit;
+}
+
+em a.current, em a:hover{
+    color:#c2c2c2;
+}
+
 #header_container{
     color:#fcfef8;
     margin:0 auto;
@@ -59,6 +68,10 @@ a.current, a:hover{
     padding:0 0 0 1em;
 }
 
+#login input{
+    width:8em;
+}
+
 input, textarea{
     font-size:1em;
     border:0px solid #16191a;
@@ -68,7 +81,15 @@ input, textarea{
     -moz-box-shadow:0px -1px 1px #0a0b0c;
     border-radius:.3em;
     color:#e2e5e7;
-    width:8em;
+}
+
+textarea{
+    width:26em;
+    height:10em;
+}
+
+dt{
+    padding:1em 0;
 }
 
 #content_container{
@@ -80,6 +101,10 @@ input, textarea{
     border-radius:.4em;
     -webkit-box-shadow:-1px -1px 2px #212930;
     */
+}
+
+.indented{
+    margin-left:2em;
 }
 
 .post_container{
