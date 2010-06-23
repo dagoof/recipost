@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class='post_container'>
-    <img src='/static/img/pie.jpg'>
+    {% if images %}
+    <img src='/static/img/{{ images[0].filename }}'/>
+    {% endif %}
     <h1><a href='{{ url_for('post_page', post_id=post.id) }}'>{{ post.title }}</a> by <a href='{{ url_for('user_page', user=post.author) }}'>{{ post.author}}</a></h1>
 </div>
 <div class='post_container'>

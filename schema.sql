@@ -26,3 +26,13 @@ create table comments(
     body string,
     ts timestamp
 );
+
+drop table if exists imageref;
+create table imageref(
+    id integer primary key autoincrement,
+    author string not null,
+    author_id integer not null,
+    contained_in integer not null,
+    filename string not null,
+    ts timestamp
+);

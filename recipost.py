@@ -21,7 +21,7 @@ def allowed_file(filename):
 def do_markdown(s):
     from markdown import markdown
     from jinja2.utils import Markup
-    return Markup(markdown(s.encode('utf-8'), ['imageExtension']).decode('utf-8'))
+    return Markup(markdown(s.encode('utf-8')).decode('utf-8'))
 
 app.jinja_env.filters['markdown']=do_markdown
 
@@ -35,7 +35,7 @@ def connect_db():
 
 def init_db():
     with closing(connect_db()) as db:
-        with app.open_resource('schema.db') as f:
+        with app.open_resource('schema.sql') as f:
             db.cursor().executescript(f.read())
         db.commit()
 
@@ -135,8 +135,9 @@ def user_page(user):
 def post_page(post_id):
     post=query_db('select * from posts where id=?', (post_id,), one=True)
     if post:
+        images=query_db('select * from imageref where contained_in=?', (post_id,))
         comments=query_db('select * from comments where reply_to=?', (post_id,))
-        return render_template('post_page.html', post=post, comments=comments)
+        return render_template('post_page.html', post=post, comments=comments, images=images)
     abort(404)
 
 @app.route('/logout')
@@ -150,14 +151,23 @@ def logout():
 def create_recipe():
     form=RecipeForm(request.form)
     if request.method=='POST' and form.validate():
-        for file in request.files.values():
-            if file and allowed_file(file.filename):
-                filename=secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
         recipe=(g.user['id'], g.user['name'], form.title.data, form.body.data, datetime.datetime.now())
         g.db.execute('insert into posts (author_id, author, title, body, ts) values (?,?,?,?,?)', recipe)
         g.db.commit()
-        return redirect(url_for('index'))
+        """
+        Selecting by timestamp seems really iffy but it appears to be working;
+        I would prefer to be selecting by title, but titles are not unique.
+        Perhaps move to uuid in the future so i can just reference that
+        """
+        recipe_post=query_db('select * from posts where ts=?', (recipe[-1],), one=True)
+        for file in request.files.values():
+            if file and allowed_file(file.filename):
+                filename=secure_filename('{i}__{t}__{f}'.format(i=recipe_post['id'], t=form.title.data, f=file.filename))
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                filedata=(g.user['name'], g.user['id'], recipe_post['id'], filename, datetime.datetime.now())
+                g.db.execute('insert into imageref (author, author_id, contained_in, filename, ts) values (?,?,?,?,?)', filedata)
+                g.db.commit()
+        return redirect(url_for('post_page', post_id=recipe_post['id']))
     return render_template('generic_form.html', form=form)
 
 @app.route('/comment/<int:post_id>', methods=['GET','POST'])
