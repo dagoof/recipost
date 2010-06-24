@@ -182,7 +182,6 @@ def edit_post(post_id):
             form=RecipeForm(request.form)
             if form.validate():
                 recipe=(form.body.data, form.title.data, post.get('id'))
-                print recipe
                 g.db.execute('update posts set body=?, title=? where id=?', recipe)
                 g.db.commit()
                 return redirect(url_for('post_page', post_id=post.get('id')))
@@ -191,11 +190,20 @@ def edit_post(post_id):
         return render_template('generic_form.html', form=form)
     return redirect(url_for('index'))
 
+@app.route('/confirm_delete/<int:post_id>')
+@login_required
+def confirm_delete(post_id):
+    session['confirm_delete']=post_id
+    post=query_db('select * from posts where id=?', (post_id,), one=True)
+    return render_template('confirm.html', post=post)
+
+
 @app.route('/delete_post/<int:post_id>')
 @login_required
 def delete_post(post_id):
     post=query_db('select * from posts where id=?', (post_id,), one=True)
-    if post.get('author')==g.user['name']:
+    if post.get('author')==g.user['name'] and session.get('confirm_delete', None)==post_id:
+        session.pop('confirm_delete')
         g.db.execute('delete from posts where id=?', (post_id,))
         g.db.execute('delete from comments where reply_to=?', (post_id,))
         images=query_db('select * from imageref where contained_in=?', (post_id,))

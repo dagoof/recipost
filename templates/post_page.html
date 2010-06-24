@@ -5,7 +5,7 @@
     <a href='/static/img/{{ images[0].filename }}'><img src='/static/img/{{ images[0].thumbname }}'/></a>
     {% endif %}
     <h1><a href='{{ url_for('post_page', post_id=post.id) }}'>{{ post.title }}</a> by <a href='{{ url_for('user_page', user=post.author) }}'>{{ post.author}}</a></h1>
-    {% if g.user.id==post.author_id %}<h3><a href='{{ url_for('edit_post', post_id=post.id) }}'>edit</a> <a href='{{ url_for('delete_post', post_id=post.id) }}'>delete</a></h3>{% endif %}
+    {% if g.user.id==post.author_id %}<h3><a href='{{ url_for('edit_post', post_id=post.id) }}'>edit</a> <a href='{{ url_for('confirm_delete', post_id=post.id) }}'>delete</a></h3>{% endif %}
 </div>
 <div class='post_container'>
     {{ post.body|markdown }}
