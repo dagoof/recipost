@@ -1,4 +1,4 @@
-import sqlite3, datetime, time, hashlib, os
+import sqlite3, datetime, time, hashlib, os, Image
 from flask import Flask, request, redirect, url_for, render_template, g, session, abort
 from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, IntegerField, FileField, validators
 from contextlib import closing
@@ -121,7 +121,6 @@ def user_page(user):
     def avg(l):
         l=list(l)
         return float(sum(l))/len(l)
-
     user_dict=query_db('select * from users where name=?', (user,), one=True)
     if user_dict:
         posts=query_db('select * from posts where author=?', (user_dict.get('name'),))
@@ -163,12 +162,49 @@ def create_recipe():
         for file in request.files.values():
             if file and allowed_file(file.filename):
                 filename=secure_filename('{i}__{t}__{f}'.format(i=recipe_post['id'], t=form.title.data, f=file.filename))
+                thumbname='thumb_{o}'.format(o=filename)
                 file.save(os.path.join(UPLOAD_FOLDER, filename))
-                filedata=(g.user['name'], g.user['id'], recipe_post['id'], filename, datetime.datetime.now())
-                g.db.execute('insert into imageref (author, author_id, contained_in, filename, ts) values (?,?,?,?,?)', filedata)
+                thumb=Image.open(os.path.join(UPLOAD_FOLDER, filename))
+                factor=200.0/max(thumb.size)
+                thumb.resize(map(lambda d:int(factor*d), thumb.size), Image.ANTIALIAS).save(os.path.join(UPLOAD_FOLDER, thumbname))
+                filedata=(g.user['name'], g.user['id'], recipe_post['id'], filename, thumbname, datetime.datetime.now())
+                g.db.execute('insert into imageref (author, author_id, contained_in, filename, thumbname, ts) values (?,?,?,?,?,?)', filedata)
                 g.db.commit()
         return redirect(url_for('post_page', post_id=recipe_post['id']))
     return render_template('generic_form.html', form=form)
+
+@app.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_id):
+    post=query_db('select * from posts where id=?', (post_id,), one=True)
+    if post and post.get('author')==g.user['name']:
+        if request.method=='POST':
+            form=RecipeForm(request.form)
+            if form.validate():
+                recipe=(form.body.data, form.title.data, post.get('id'))
+                print recipe
+                g.db.execute('update posts set body=?, title=? where id=?', recipe)
+                g.db.commit()
+                return redirect(url_for('post_page', post_id=post.get('id')))
+            return render_template('generic_form.html', form=form)
+        form=RecipeForm(**post)
+        return render_template('generic_form.html', form=form)
+    return redirect(url_for('index'))
+
+@app.route('/delete_post/<int:post_id>')
+@login_required
+def delete_post(post_id):
+    post=query_db('select * from posts where id=?', (post_id,), one=True)
+    if post.get('author')==g.user['name']:
+        g.db.execute('delete from posts where id=?', (post_id,))
+        g.db.execute('delete from comments where reply_to=?', (post_id,))
+        images=query_db('select * from imageref where contained_in=?', (post_id,))
+        for image in images:
+            os.remove(os.path.join(UPLOAD_FOLDER, image['filename']))
+            os.remove(os.path.join(UPLOAD_FOLDER, image['thumbname']))
+        g.db.execute('delete from imageref where contained_in=?', (post_id,))
+        g.db.commit()
+    return redirect(url_for('index'))
 
 @app.route('/comment/<int:post_id>', methods=['GET','POST'])
 @login_required

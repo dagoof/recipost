@@ -117,17 +117,20 @@ dt{
 }
 
 .post_container img{
-    width:220px;
-    height:200px;
     background:white;
     border:1px solid #d9e7eb;
     padding:6px;
     margin:0px 15px 5px 0;
     float:left;
+    clear:both;
 }
 
-.post_container h1, .post_container h2, .post_container h3{
+.post_container h1, .post_container h2{
     margin:0;
     padding:0;
     display:inline;
+}
+
+.right{
+    float:right;
 }

@@ -34,5 +34,6 @@ create table imageref(
     author_id integer not null,
     contained_in integer not null,
     filename string not null,
+    thumbname string,
     ts timestamp
 );
