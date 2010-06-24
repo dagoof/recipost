@@ -11,6 +11,8 @@
 </dd>
 {% endmacro %}
 
+{% block js %}<script type='text/javascript' src='/static/js/images.js'></script>{% endblock %}
+
 {% block content %}
 <form method='post' action='{{ request.path }}' enctype='multipart/form-data'>
     <dl>
