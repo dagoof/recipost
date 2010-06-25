@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class='post_container'>
+    <p>Would you like to <a href='{{ url_for('delete_post', post_id=post.id) }}'>Confirm</a> removal of <a href='{{ url_for('post_page', post_id=post.id) }}'>{{ post.title }}</a>?</p>
+    <p>Or have you made a mistake and would like to <a href='{{ url_for('post_page', post_id=post.id) }}'>retreat</a> to safer lands?</p>
+</div>
+{% endblock %}

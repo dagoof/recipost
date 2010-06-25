@@ -208,8 +208,9 @@ def delete_post(post_id):
         g.db.execute('delete from comments where reply_to=?', (post_id,))
         images=query_db('select * from imageref where contained_in=?', (post_id,))
         for image in images:
-            os.remove(os.path.join(UPLOAD_FOLDER, image['filename']))
-            os.remove(os.path.join(UPLOAD_FOLDER, image['thumbname']))
+            for path in [os.path.join(UPLOAD_FOLDER, image[p]) for p in ('filename', 'thumbname',)]:
+                if os.access(path, os.F_OK):
+                    os.remove(path)
         g.db.execute('delete from imageref where contained_in=?', (post_id,))
         g.db.commit()
     return redirect(url_for('index'))
