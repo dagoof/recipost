@@ -1,6 +1,6 @@
 import sqlite3, datetime, time, hashlib, os, Image
 from flask import Flask, request, redirect, url_for, render_template, g, session, abort
-from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, IntegerField, FileField, validators
+from wtforms import Form, BooleanField, TextField, PasswordField, TextAreaField, IntegerField, FileField, validators, ValidationError
 from contextlib import closing
 from functools import wraps
 from werkzeug import secure_filename
@@ -50,6 +50,9 @@ class RegistrationForm(Form):
     email=TextField('Email Address', [validators.required(), validators.Email()])
     password=PasswordField('Password', [validators.Required(), validators.EqualTo('password_confirm', message='Passwords must match')])
     password_confirm=PasswordField('Repeat Password')
+    def validate_username(form, field):
+        if query_db('select * from users where name=?', (field.data,), one=True):
+            raise ValidationError('That username already exists in the database')
 
 class LoginForm(Form):
     username=TextField('Username', [validators.required(),])
