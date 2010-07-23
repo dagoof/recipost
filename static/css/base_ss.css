@@ -1,3 +1,19 @@
+@font-face {
+	font-family: 'InconsolataMedium';
+	src: url('/static/fonts/Inconsolata-webfont.eot');
+	src: local('☺'), url('/static/fonts/Inconsolata-webfont.woff') format('woff'), url('/static/fonts/Inconsolata-webfont.ttf') format('truetype'), url('/static/fonts/Inconsolata-webfont.svg#webfontAOsRw1AW') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'GoudyBookletter1911Regular';
+	src: url('/static/fonts/goudy_bookletter_1911-webfont.eot');
+	src: local('☺'), url('/static/fonts/goudy_bookletter_1911-webfont.woff') format('woff'), url('/static/fonts/goudy_bookletter_1911-webfont.ttf') format('truetype'), url('/static/fonts/goudy_bookletter_1911-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
 html{
     background:#3e4551;
 }
@@ -43,7 +59,7 @@ em a.current, em a:hover{
 
 #header_container em{
     font-size:4.6em;
-    font-family:'Goudy Bookletter 1911';
+    font-family:'GoudyBookletter1911Regular';
     font-weight:none;
     font-style:normal;
     text-shadow:0px -1px 1px #000;
@@ -74,6 +90,7 @@ em a.current, em a:hover{
 
 input, textarea{
     font-size:1em;
+    font-family:'InconsolataMedium', monospace;
     border:0px solid #16191a;
     background-color:#212930;
     box-shadow:0px -1px 1px #0a0b0c;
