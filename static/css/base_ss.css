@@ -84,6 +84,10 @@ em a.current, em a:hover{
     padding:0 0 0 1em;
 }
 
+#login form{
+    display:inline;
+}
+
 #login input{
     width:8em;
 }
@@ -137,7 +141,7 @@ dt{
     background:white;
     border:1px solid #d9e7eb;
     padding:6px;
-    margin:0px 15px 5px 0;
+    margin:0 0 5px 10px;
     float:right;
     clear:both;
 }

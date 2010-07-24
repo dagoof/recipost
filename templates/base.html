@@ -17,7 +17,11 @@
                 <ul>
                     <li><a href='/create'><span class='action'>new post</a></li>
                     <li><a href='/tags'>tags</a></li>
-                    <li><input type='text' name='search'/></li>
+                    <li>
+                        <form action='{{ url_for('search') }}' method='post'>
+                            <input type='text' name='search'/>
+                        </form>
+                    </li>
                 </ul>
             </div>
             <em><a href='{{ url_for('index') }}'>recipost</a></em>

@@ -229,6 +229,17 @@ def comment(post_id):
         return redirect(url_for('post_page', post_id=post_id))
     return render_template('generic_form.html', form=form)
 
+@app.route('/search', methods=['GET','POST'])
+def search():
+    searchterm=request.form.get('search')
+    print searchterm
+    if request.method=='POST' and searchterm:
+        searchterm='%{0}%'.format(searchterm)
+        users=query_db('select * from users where name like ?', (searchterm,))
+        posts=query_db('select * from posts where body like ? or title like ?',
+            (searchterm,searchterm,))
+        return render_template('index.html',users=users,posts=posts)
+    return redirect(url_for('index'))
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=8091)
