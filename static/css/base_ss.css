@@ -94,7 +94,6 @@ em a.current, em a:hover{
 
 input, textarea{
     font-size:1em;
-    font-family:'InconsolataMedium', monospace;
     border:0px solid #16191a;
     background-color:#212930;
     box-shadow:0px -1px 1px #0a0b0c;
@@ -107,6 +106,7 @@ input, textarea{
 textarea{
     width:26em;
     height:10em;
+    font-family:'InconsolataMedium', monospace;
 }
 
 dt{
